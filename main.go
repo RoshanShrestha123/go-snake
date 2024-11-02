@@ -10,6 +10,8 @@ func main() {
 	ebiten.SetWindowSize(640, 420)
 	ebiten.SetWindowTitle("Snake game")
 
+	go Timer()
+
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal("can't run game", err)
 	}
