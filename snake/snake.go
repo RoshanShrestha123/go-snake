@@ -1,6 +1,7 @@
 package snake
 
 import (
+	"github.com/RoshanShrestha123/go-snake/food"
 	"github.com/RoshanShrestha123/go-snake/helper"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -82,6 +83,32 @@ func (s *Snake) CheckCollision(screenWidth, screenHeight int) {
 	if head.X+s.Size.W >= screenWidth || head.X <= 0 || head.Y+s.Size.H >= screenHeight || head.Y <= 0 {
 		s.IsAlive = false
 	}
+
+	for _, segment := range s.Segment[1:] {
+		if head == segment {
+			s.IsAlive = false
+		}
+	}
+
+}
+
+func (s *Snake) EatFood(foods *[]food.Food) {
+	head := s.Segment[0]
+	newFoods := (*foods)
+	for i, food := range *foods {
+		if head.X+s.Size.W > food.Position.X &&
+			head.X < food.Size.W+food.Position.X &&
+			head.Y+s.Size.H > food.Position.Y &&
+			head.Y < food.Position.Y+food.Size.H {
+
+			newFoods = append(newFoods[:i], newFoods[i+1:]...)
+			s.Grow = true
+			s.Score++
+
+		}
+	}
+
+	*foods = newFoods
 
 }
 

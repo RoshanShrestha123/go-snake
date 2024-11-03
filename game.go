@@ -24,6 +24,7 @@ func (g *Game) Update() error {
 	width, height := ebiten.WindowSize()
 	player.UpdateDirection()
 	player.CheckCollision(width, height)
+	player.EatFood(&foods)
 	player.UpdateMovement()
 
 	return nil
@@ -34,12 +35,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if !player.IsAlive {
 		screen.Fill(color.RGBA{R: 255, B: 0, G: 0})
 
-		ebitenutil.DebugPrint(screen, "Game over")
-
-	} else {
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d", player.Score))
-
 	}
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d", player.Score))
 
 	for _, body := range player.Segment {
 		ebitenutil.DrawRect(screen, float64(body.X), float64(body.Y), float64(player.Size.W), float64(player.Size.H), color.White)
@@ -61,11 +58,14 @@ func Timer() {
 		if !player.IsAlive {
 			break
 		}
-		fmt.Println("simulating level up")
-		time.Sleep(3 * time.Second)
-		player.Grow = true
-		player.Score++
+		time.Sleep(5 * time.Second)
+
+		if len(foods) > 1 {
+			foods = foods[1:]
+
+		}
 		foods = append(foods, *food.NewFood())
+		fmt.Println("Generate new food", foods)
 
 	}
 
